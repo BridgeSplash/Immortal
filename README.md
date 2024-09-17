@@ -5,4 +5,6 @@
 
 ### A versatile game library for Minestom
 
-[Latest release](https://github.com/EmortalMC/Immortal/releases/tag/latest)
+[Forked from EmortalMC](https://github.com/EmortalMC/Immortal/)
+<br />
+[Latest release](https://github.com/BridgeSplash/Immortal/releases/tag/latest)
