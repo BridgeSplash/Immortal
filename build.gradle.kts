@@ -14,7 +14,10 @@ repositories {
     mavenCentral()
 
     maven {
-        url=uri("https://maven.jeremylvln.fr/repository/shulker-releases")
+        url = uri("https://www.jitpack.io")
+    }
+    maven {
+        url = uri("https://maven.jeremylvln.fr/repository/shulker-releases")
     }
 }
 
