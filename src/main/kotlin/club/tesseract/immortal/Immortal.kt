@@ -32,9 +32,12 @@ object Immortal {
     lateinit var gameConfig: GameConfig
     private val configPath = Path.of("./config.json")
 
+    val serverName get() = System.getProperty("SHULKER_SERVER_NAME") ?: gameConfig.serverName
     val port get() = System.getProperty("port")?.toInt() ?: gameConfig.port
     val address get() = System.getProperty("address") ?: gameConfig.ip
     val redisAddress get() = System.getProperty("redisAddress") ?: gameConfig.redisAddress
+    val development get() = MinestomServer.development
+
 
     fun init(registerEvents: Boolean = true, eventNode: EventNode<Event> = MinecraftServer.getGlobalEventHandler()) {
         System.setProperty("org.litote.mongo.mapping.service", SerializationClassMappingTypeService::class.qualifiedName!!)
@@ -42,8 +45,8 @@ object Immortal {
         gameConfig = ConfigHelper.initConfigFile(configPath, GameConfig())
 
         // Ignore warning when player opens recipe book
-        MinecraftServer.getPacketListenerManager().setPlayListener<ClientSetRecipeBookStatePacket>(ClientSetRecipeBookStatePacket::class.java) { _: ClientSetRecipeBookStatePacket, _: Player -> }
-        MinecraftServer.getPacketListenerManager().setPlayListener<ClientChatSessionUpdatePacket>(ClientChatSessionUpdatePacket::class.java) { _: ClientChatSessionUpdatePacket, _: Player -> }
+        MinecraftServer.getPacketListenerManager().setPlayListener(ClientSetRecipeBookStatePacket::class.java) { _: ClientSetRecipeBookStatePacket, _: Player -> }
+        MinecraftServer.getPacketListenerManager().setPlayListener(ClientChatSessionUpdatePacket::class.java) { _: ClientChatSessionUpdatePacket, _: Player -> }
 
         if (redisAddress.isBlank()) {
             LOGGER.info("Running without Redis - Game to join: ${gameConfig.defaultGame}")
@@ -94,6 +97,7 @@ object Immortal {
         cm.register(StopCommand)
 
         LOGGER.info("Immortal initialized!")
+        LOGGER.info("Server name: $serverName")
     }
 
     fun initAsServer(registerEvents: Boolean = true, eventNode: EventNode<Event>? = null) {

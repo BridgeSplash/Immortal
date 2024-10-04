@@ -1,6 +1,5 @@
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version "2.0.20"
@@ -14,11 +13,17 @@ plugins {
 repositories {
     mavenCentral()
 
+    maven {
+        url=uri("https://maven.jeremylvln.fr/repository/shulker-releases")
+    }
 }
 
 dependencies {
     compileOnly("net.minestom:minestom-snapshots:9fbff439e7")
     testImplementation("net.minestom:minestom-snapshots:9fbff439e7")
+    implementation("dev.hollowcube:minestom-ce-extensions:1.2.0")
+    testImplementation("dev.hollowcube:minestom-ce-extensions:1.2.0")
+    implementation("io.shulkermc:shulker-server-agent:0.11.0:minestom")
 
     // Util
     api("net.kyori:adventure-text-minimessage:4.12.0")
