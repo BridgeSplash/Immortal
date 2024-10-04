@@ -21,8 +21,6 @@ dependencies {
     testImplementation("net.minestom:minestom-snapshots:9fbff439e7")
 
     // Util
-    api("com.github.emortaldev:Particable:f7212f39fb")
-    api("com.github.EmortalMC:rayfast:9e5accbdfd")
     api("net.kyori:adventure-text-minimessage:4.12.0")
 
     // DB
@@ -53,9 +51,6 @@ tasks {
 
         mergeServiceFiles()
         minimize()
-        dependencies {
-            exclude(dependency("com.github.emortaldev:Particable"))
-        }
     }
 
     build {
@@ -65,11 +60,14 @@ tasks {
     test {
         useJUnitPlatform()
     }
-}
 
-tasks{
-    compileKotlin{
-        kotlinOptions{
+    java{
+        withJavadocJar()
+        withSourcesJar()
+    }
+
+    compileKotlin {
+        kotlinOptions {
             jvmTarget = JavaVersion.VERSION_21.toString()
             freeCompilerArgs = listOf("-Xinline-classes")
         }
@@ -77,6 +75,16 @@ tasks{
 }
 
 publishing {
+    repositories{
+        maven {
+            name = "Tesseract"
+            url = uri("https://repo.tesseract.club/releases")
+            credentials {
+                username = System.getenv("MavenUsername")
+                password = System.getenv("MavenPassword")
+            }
+        }
+    }
     publications {
         create<MavenPublication>("maven") {
             groupId = project.properties["group"] as? String?
