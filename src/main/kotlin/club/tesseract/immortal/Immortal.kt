@@ -6,6 +6,7 @@ import club.tesseract.immortal.blockhandler.SkullHandler
 import club.tesseract.immortal.commands.*
 import club.tesseract.immortal.config.ConfigHelper
 import club.tesseract.immortal.config.GameConfig
+import club.tesseract.immortal.config.RedisConfig
 import club.tesseract.immortal.debug.ImmortalDebug
 import club.tesseract.immortal.debug.SpamGamesCommand
 import club.tesseract.immortal.game.GameManager
@@ -36,7 +37,6 @@ object Immortal {
     val serverName get() = System.getProperty("SHULKER_SERVER_NAME") ?: gameConfig.serverName
     val port get() = System.getProperty("port")?.toInt() ?: gameConfig.port
     val address get() = System.getProperty("address") ?: gameConfig.ip
-    val redisAddress get() = System.getProperty("redisAddress") ?: gameConfig.redisAddress
     val development get() = MinestomServer.development
 
 
@@ -54,7 +54,11 @@ object Immortal {
             GameConfig(
                 serverName = shulkerGameServerName,
                 defaultGame = gameMode,
-                redisAddress = "redis://$redisAddresShulker:$redisPortShulker"
+                redis = RedisConfig(
+                    active = true,
+                    host = redisAddresShulker,
+                    port = redisPortShulker.toInt()
+                )
             )
         }
 
@@ -62,7 +66,7 @@ object Immortal {
         MinecraftServer.getPacketListenerManager().setPlayListener(ClientSetRecipeBookStatePacket::class.java) { _: ClientSetRecipeBookStatePacket, _: Player -> }
         MinecraftServer.getPacketListenerManager().setPlayListener(ClientChatSessionUpdatePacket::class.java) { _: ClientChatSessionUpdatePacket, _: Player -> }
 
-        if (redisAddress.isBlank()) {
+        if (!gameConfig.redis.active) {
             LOGGER.info("Running without Redis - Game to join: ${gameConfig.defaultGame}")
 
             if (gameConfig.defaultGame.isBlank()) {

@@ -8,7 +8,7 @@ data class GameConfig(
      * Also decides whether to connect to redis
      * if empty, it will not
      */
-    val redisAddress: String = "",
+    val redis: RedisConfig = RedisConfig(),
     /**
      * Which game to join if redis address is blank
      */

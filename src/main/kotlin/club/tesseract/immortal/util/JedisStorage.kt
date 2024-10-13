@@ -11,6 +11,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.minestom.server.MinecraftServer
 import org.slf4j.LoggerFactory
+import redis.clients.jedis.JedisPool
 import redis.clients.jedis.JedisPooled
 import redis.clients.jedis.JedisPubSub
 import java.util.*
@@ -21,8 +22,20 @@ object JedisStorage {
     private val LOGGER = LoggerFactory.getLogger(JedisStorage::class.java)
 
     val jedis =
-        if (Immortal.redisAddress.isNotBlank()) {
-            JedisPooled(Immortal.gameConfig.redisAddress)
+        if (Immortal.gameConfig.redis.active) {
+            if(Immortal.gameConfig.redis.username != null && Immortal.gameConfig.redis.password != null){
+                JedisPooled(
+                    Immortal.gameConfig.redis.host,
+                    Immortal.gameConfig.redis.port,
+                    Immortal.gameConfig.redis.username,
+                    Immortal.gameConfig.redis.password
+                )
+            } else {
+                JedisPooled(
+                    Immortal.gameConfig.redis.host,
+                    Immortal.gameConfig.redis.port,
+                )
+            }
         } else null
 
     fun init() {
