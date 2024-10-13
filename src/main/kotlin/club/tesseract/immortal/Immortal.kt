@@ -42,7 +42,19 @@ object Immortal {
     fun init(registerEvents: Boolean = true, eventNode: EventNode<Event> = MinecraftServer.getGlobalEventHandler()) {
         System.setProperty("org.litote.mongo.mapping.service", SerializationClassMappingTypeService::class.qualifiedName!!)
 
-        gameConfig = ConfigHelper.initConfigFile(configPath, GameConfig())
+        gameConfig = if(MinestomServer.development) {
+            ConfigHelper.initConfigFile(configPath, GameConfig())
+        }else {
+            val shulkerGameServerName = System.getenv("SHULKER_SERVER_NAME")
+            val redisAddresShulker = System.getenv("SHULKER_PROXY_REDIS_HOST")
+            val redisPortShulker = System.getenv("SHULKER_PROXY_REDIS_PORT")
+            val gameMode = shulkerGameServerName.split("-").first()
+            GameConfig(
+                serverName = shulkerGameServerName,
+                defaultGame = gameMode,
+                redisAddress = "redis://$redisAddresShulker:$redisPortShulker"
+            )
+        }
 
         // Ignore warning when player opens recipe book
         MinecraftServer.getPacketListenerManager().setPlayListener(ClientSetRecipeBookStatePacket::class.java) { _: ClientSetRecipeBookStatePacket, _: Player -> }

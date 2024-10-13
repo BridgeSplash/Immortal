@@ -48,7 +48,9 @@ class MinestomServer(builder: Builder) {
         address = builder.address
         port = builder.port
 
-        ShulkerServerAgentMinestom.init(java.util.logging.Logger.getLogger("Shulker"))
+        if(isProduction()) {
+            ShulkerServerAgentMinestom.init(java.util.logging.Logger.getLogger("Shulker"))
+        }
         server = ExtensionBootstrap.init()
 
         MinecraftServer.setBrandName("BridgeSplash")
@@ -57,7 +59,7 @@ class MinestomServer(builder: Builder) {
         val compression = if(development) 0 else 256
         MinecraftServer.setCompressionThreshold(compression)
 
-        if (builder.mojangAuth) {
+        if (builder.mojangAuth && development) {
             LOGGER.info("Enabling Mojang authentication")
             MojangAuth.init()
         }
