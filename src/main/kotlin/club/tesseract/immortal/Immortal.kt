@@ -50,6 +50,7 @@ object Immortal {
             val redisAddresShulker = Optional.ofNullable<String>(System.getenv("SHULKER_PROXY_REDIS_HOST")).orElse("my-cluster-redis-managed")
             val redisPortShulker = Optional.ofNullable<String>(System.getenv("SHULKER_PROXY_REDIS_PORT")).orElse("6379")
             val gameMode = shulkerGameServerName.split("-").first()
+            LOGGER.info("Redis: $redisAddresShulker:$redisPortShulker")
             GameConfig(
                 serverName = shulkerGameServerName,
                 defaultGame = gameMode,
