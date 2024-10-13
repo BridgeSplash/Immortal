@@ -55,7 +55,7 @@ object Immortal {
                 serverName = shulkerGameServerName,
                 defaultGame = gameMode,
                 redis = RedisConfig(
-                    active = true,
+                    active = false,
                     host = redisAddresShulker,
                     port = redisPortShulker.toInt()
                 )
