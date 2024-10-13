@@ -401,7 +401,7 @@ abstract class Game : PacketGroupingAudience {
         startingTask?.cancel()
         startingTask = null
 
-        val debugMode = Immortal.gameConfig.redisAddress.isBlank()
+        val debugMode = !Immortal.gameConfig.redis.active
         val defaultGame = Immortal.gameConfig.defaultGame
 
         val joinCountDown = CountDownLatch(players.size)

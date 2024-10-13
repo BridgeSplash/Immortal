@@ -21,7 +21,7 @@ object ImmortalEvents {
     fun register(eventNode: EventNode<Event>) {
         LOGGER.info("Registering events!")
 
-        if (Immortal.redisAddress.isBlank()) eventNode.addListener(PlayerChatEvent::class.java) { e ->
+        if (Immortal.gameConfig.redis.active) eventNode.addListener(PlayerChatEvent::class.java) { e ->
             e.isCancelled = true
         }
 
