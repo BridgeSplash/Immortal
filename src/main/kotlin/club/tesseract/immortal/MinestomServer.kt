@@ -42,7 +42,7 @@ class MinestomServer(builder: Builder) {
     private val port: Int
     private val startTime: Long = System.currentTimeMillis()
 
-    private var server: ExtensionBootstrap
+    private var server: ExtensionBootstrap? = null
 
     init {
         address = builder.address
@@ -50,8 +50,9 @@ class MinestomServer(builder: Builder) {
 
         if(isProduction()) {
             ShulkerServerAgentMinestom.init(java.util.logging.Logger.getLogger("Shulker"))
+        } else {
+            server = ExtensionBootstrap.init()
         }
-        server = ExtensionBootstrap.init()
 
         MinecraftServer.setBrandName("BridgeSplash")
         MinecraftServer.setDifficulty(Difficulty.PEACEFUL)
@@ -68,7 +69,9 @@ class MinestomServer(builder: Builder) {
     }
 
     fun start() {
-        server.start(address, port)
+        server?.start(address, port)?: run{
+            ShulkerServerAgentMinestom.start()
+        }
 
         Immortal.init()
 
