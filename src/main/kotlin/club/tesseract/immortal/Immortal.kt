@@ -23,6 +23,7 @@ import net.minestom.server.timer.TaskSchedule
 import org.litote.kmongo.serialization.SerializationClassMappingTypeService
 import org.slf4j.LoggerFactory
 import java.nio.file.Path
+import java.util.Optional
 import kotlin.system.exitProcess
 
 object Immortal {
@@ -46,8 +47,8 @@ object Immortal {
             ConfigHelper.initConfigFile(configPath, GameConfig())
         }else {
             val shulkerGameServerName = System.getenv("SHULKER_SERVER_NAME")
-            val redisAddresShulker = System.getenv("SHULKER_PROXY_REDIS_HOST")
-            val redisPortShulker = System.getenv("SHULKER_PROXY_REDIS_PORT")
+            val redisAddresShulker = Optional.ofNullable<String>(System.getenv("SHULKER_PROXY_REDIS_HOST")).orElse("my-cluster-redis-managed")
+            val redisPortShulker = Optional.ofNullable<String>(System.getenv("SHULKER_PROXY_REDIS_PORT")).orElse("6379")
             val gameMode = shulkerGameServerName.split("-").first()
             GameConfig(
                 serverName = shulkerGameServerName,

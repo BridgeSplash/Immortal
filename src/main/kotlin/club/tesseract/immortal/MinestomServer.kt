@@ -69,11 +69,11 @@ class MinestomServer(builder: Builder) {
     }
 
     fun start() {
+        Immortal.init()
+
         server?.start(address, port)?: run{
             ShulkerServerAgentMinestom.start()
         }
-
-        Immortal.init()
 
         // Log the done time
         val df = DecimalFormat("#.##")
