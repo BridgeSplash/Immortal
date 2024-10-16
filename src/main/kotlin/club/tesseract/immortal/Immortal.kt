@@ -23,6 +23,7 @@ import net.minestom.server.network.packet.client.play.ClientSetRecipeBookStatePa
 import net.minestom.server.timer.TaskSchedule
 import org.litote.kmongo.serialization.SerializationClassMappingTypeService
 import org.slf4j.LoggerFactory
+import org.slf4j.bridge.SLF4JBridgeHandler
 import java.nio.file.Path
 import java.util.Optional
 import kotlin.system.exitProcess
@@ -116,6 +117,7 @@ object Immortal {
 
         LOGGER.info("Immortal initialized!")
         LOGGER.info("Server name: $serverName")
+        MinecraftServer.getSchedulerManager().buildTask(::stop)
     }
 
     fun initAsServer(registerEvents: Boolean = true, eventNode: EventNode<Event>? = null) {
@@ -139,13 +141,6 @@ object Immortal {
     }
 
     fun stop() {
-//        ForceStartCommand.unregister()
-//        ForceGCCommand.unregister()
-//        SoundCommand.unregister()
-//        StatsCommand.unregister()
-//        ListCommand.unregister()
-//        VersionCommand.unregister()
-
         GameManager.getRegisteredNames().forEach {
             JedisStorage.jedis?.publish("playercount", "$it 0")
         }
@@ -153,6 +148,9 @@ object Immortal {
         JedisStorage.jedis?.close()
 
         LOGGER.info("Immortal terminated!")
+        if(SLF4JBridgeHandler.isInstalled()) {
+            SLF4JBridgeHandler.uninstall()
+        }
     }
 
 }

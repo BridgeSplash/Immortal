@@ -36,8 +36,10 @@ dependencies {
     api("org.litote.kmongo:kmongo-coroutine-serialization:4.8.0")
     api("org.litote.kmongo:kmongo-id:4.8.0")
 
+    // Logging
     implementation("ch.qos.logback:logback-core:1.5.8")
     implementation("ch.qos.logback:logback-classic:1.5.8")
+    implementation("org.slf4j:jul-to-slf4j:2.0.16")
 
     compileOnly("space.vectrix.flare:flare:2.0.1")
     compileOnly("space.vectrix.flare:flare-fastutil:2.0.1")

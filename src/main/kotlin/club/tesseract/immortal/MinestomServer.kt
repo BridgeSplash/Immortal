@@ -7,8 +7,10 @@ import net.minestom.server.extras.MojangAuth
 import net.minestom.server.world.Difficulty
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.slf4j.bridge.SLF4JBridgeHandler
 import java.math.RoundingMode
 import java.text.DecimalFormat
+import java.util.logging.LogManager
 
 
 class MinestomServer(builder: Builder) {
@@ -24,6 +26,8 @@ class MinestomServer(builder: Builder) {
 
         init{
             val loggerConfigFile = if(isProduction())  "logback-prod.xml" else "logback-dev.xml"
+            LogManager.getLogManager().reset();
+            SLF4JBridgeHandler.install()
             System.setProperty("logback.configurationFile", loggerConfigFile);
 
             LOGGER = LoggerFactory.getLogger(MinestomServer::class.java)
