@@ -48,7 +48,7 @@ abstract class Game : PacketGroupingAudience {
     abstract val gameName: String
     abstract val gameComponent: Component
 
-    val players get() = getPlayers().filter { !it.hasTag(GameManager.playerSpectatingTag) }
+    val activePlayers get() = getPlayers().filter { !it.hasTag(GameManager.playerSpectatingTag) }
     val spectators get() = getPlayers().filter { it.hasTag(GameManager.playerSpectatingTag) }
 
     val playerCount = AtomicInteger(0)
@@ -178,7 +178,7 @@ abstract class Game : PacketGroupingAudience {
                 .append(Component.text(player.username, NamedTextColor.GREEN))
                 .append(Component.text(" joined the game ", NamedTextColor.GRAY))
                 .also {
-                    if (gameState == GameState.WAITING_FOR_PLAYERS) it.append(Component.text("(${players.size}/${maxPlayers})", NamedTextColor.DARK_GRAY))
+                    if (gameState == GameState.WAITING_FOR_PLAYERS) it.append(Component.text("(${activePlayers.size}/${maxPlayers})", NamedTextColor.DARK_GRAY))
                 }
         )
 
@@ -201,13 +201,13 @@ abstract class Game : PacketGroupingAudience {
 
         refreshPlayerCount()
 
-        if (gameState == GameState.WAITING_FOR_PLAYERS && players.size >= minPlayers) {
+        if (gameState == GameState.WAITING_FOR_PLAYERS && activePlayers.size >= minPlayers) {
 
 
             if (startingTask == null) {
                 startCountdown()
             } else {
-                if ((maxPlayers / 2.0) < players.size) {
+                if ((maxPlayers / 2.0) < activePlayers.size) {
                     if (startingSecondsLeft.get() < 15) return
                     startingSecondsLeft.set(15)
 
@@ -235,20 +235,20 @@ abstract class Game : PacketGroupingAudience {
                 .append(Component.text(player.username, NamedTextColor.RED))
                 .append(Component.text(" left the game ", NamedTextColor.GRAY))
                 .also {
-                    if (gameState == GameState.WAITING_FOR_PLAYERS) it.append(Component.text("(${players.size}/${maxPlayers})", NamedTextColor.DARK_GRAY))
+                    if (gameState == GameState.WAITING_FOR_PLAYERS) it.append(Component.text("(${activePlayers.size}/${maxPlayers})", NamedTextColor.DARK_GRAY))
                 }
         )
         playSound(Sound.sound(SoundEvent.ENTITY_ITEM_PICKUP, Sound.Source.MASTER, 1f, 0.5f))
 
-        if (players.size < minPlayers) {
+        if (activePlayers.size < minPlayers) {
             if (startingTask != null) {
                 cancelCountdown()
             }
         }
 
         if (gameState == GameState.PLAYING) {
-            if (players.size == 1 && minPlayers != 1) {
-                victory(players.first())
+            if (activePlayers.size == 1 && minPlayers != 1) {
+                victory(activePlayers.first())
             }
         }
 
@@ -260,14 +260,14 @@ abstract class Game : PacketGroupingAudience {
     }
 
     open fun refreshPlayerCount() {
-        synchronized(players) {
-            JedisStorage.jedis?.publish("playercount", "$gameName ${GameManager.getGames(gameName)?.sumOf { if (it.instance == null) 0 else it.players.size } ?: 0}")
+        synchronized(activePlayers) {
+            JedisStorage.jedis?.publish("playercount", "$gameName ${GameManager.getGames(gameName)?.sumOf { if (it.instance == null) 0 else it.activePlayers.size } ?: 0}")
 
-            if (instance != null && minPlayers > players.size && gameState == GameState.WAITING_FOR_PLAYERS) {
+            if (instance != null && minPlayers > activePlayers.size && gameState == GameState.WAITING_FOR_PLAYERS) {
                 scoreboard?.updateLineContent(
                     "infoLine",
                     Component.text(
-                        "Waiting for players... (${minPlayers - players.size} more)",
+                        "Waiting for players... (${minPlayers - activePlayers.size} more)",
                         NamedTextColor.GRAY
                     )
                 )
@@ -404,7 +404,7 @@ abstract class Game : PacketGroupingAudience {
         val debugMode = !Immortal.gameConfig.redis.active
         val defaultGame = Immortal.gameConfig.defaultGame
 
-        val joinCountDown = CountDownLatch(players.size)
+        val joinCountDown = CountDownLatch(activePlayers.size)
 
         // Both spectators and players
         getPlayers().shuffled().iterator().forEachRemaining {
@@ -466,7 +466,7 @@ abstract class Game : PacketGroupingAudience {
         val victoryQuote = EndGameQuotes.victory.random()
         val defeatQuote = EndGameQuotes.defeat.random()
 
-        players.forEach {
+        activePlayers.forEach {
             if (winningPlayers.contains(it)) {
                 val victoryTitle = Title.title(
                     Component.text("VICTORY!", NamedTextColor.GOLD, TextDecoration.BOLD),
