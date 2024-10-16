@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 object TestRink {
 
     @Test
-    fun runServer(): Unit {
+    fun runServer() {
         MinestomServer.Builder()
             .commonVariables()
             .mojangAuth(false)

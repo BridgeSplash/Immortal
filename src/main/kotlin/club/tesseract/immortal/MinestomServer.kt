@@ -26,9 +26,9 @@ class MinestomServer(builder: Builder) {
 
         init{
             val loggerConfigFile = if(isProduction())  "logback-prod.xml" else "logback-dev.xml"
-            LogManager.getLogManager().reset();
+            LogManager.getLogManager().reset()
             SLF4JBridgeHandler.install()
-            System.setProperty("logback.configurationFile", loggerConfigFile);
+            System.setProperty("logback.configurationFile", loggerConfigFile)
 
             LOGGER = LoggerFactory.getLogger(MinestomServer::class.java)
         }
